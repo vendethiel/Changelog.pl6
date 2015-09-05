@@ -1,11 +1,11 @@
 sub MAIN($next-version = 'master') {
 	my $first-commit = qx/git log --pretty=%H | tail -1/.chomp;
-	my @versions = ('master', qx/git tag/.chomp.split("\n").reverse, $first-commit).uniq;
+	my @versions = flat('master', qx/git tag/.chomp.split("\n").reverse, $first-commit).unique;
 
 	sub describe(Int $i, Str $tag) {
-		if $tag !eq 'master' {
+		if $tag ne 'master' {
 			print "\n$tag";
-			print qqx/git --no-pager log -1 --date=short --pretty=" (%ad)" "$tag"/; # date
+			print qqx/git --no-pager log -1 --date=short --pretty=" (%ad)" -- "$tag"/; # date
 		}
 		print git-log-short("@versions[$i+1]..$tag");
 	}
